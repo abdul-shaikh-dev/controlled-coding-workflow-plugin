@@ -87,6 +87,34 @@ const FEATURES = {
   },
 };
 
+const LANGUAGE_PROFILES = {
+  csharp: {
+    label: "C#",
+    contextTokens: { small: 11000, mid: 36000, large: 105000 },
+    outputMultiplier: 1.08,
+  },
+  python: {
+    label: "Python",
+    contextTokens: { small: 7500, mid: 24000, large: 70000 },
+    outputMultiplier: 0.92,
+  },
+  react: {
+    label: "React",
+    contextTokens: { small: 9500, mid: 33000, large: 88000 },
+    outputMultiplier: 1.12,
+  },
+  javascript: {
+    label: "JavaScript",
+    contextTokens: { small: 8500, mid: 28000, large: 76000 },
+    outputMultiplier: 1.0,
+  },
+  typescript: {
+    label: "TypeScript",
+    contextTokens: { small: 9500, mid: 31000, large: 84000 },
+    outputMultiplier: 1.08,
+  },
+};
+
 const SKILL_OVERHEAD = 800; // SKILL.md loaded into context each invocation (~800 tokens)
 const SCAFFOLD_REF_OVERHEAD = 600; // references/scaffold.md loaded for scaffold phase
 const REPEATED_CONTEXT_CACHE_SHARE = 0.25; // Approximation for repeated repo context billed as cached input
@@ -101,10 +129,13 @@ function calcCost(modelKey, inputTokens, cachedInputTokens, cacheWriteTokens, ou
   return inputCost + cachedInputCost + cacheWriteCost + outputCost;
 }
 
-function calcScenario(codebaseKey, featureKey, modelKey) {
+function calcScenario(languageKey, codebaseKey, featureKey, modelKey) {
   const cb = SCENARIOS[codebaseKey];
   const feat = FEATURES[featureKey];
+  const lang = LANGUAGE_PROFILES[languageKey];
   const phases = feat.phases;
+  const contextTokens = lang.contextTokens[codebaseKey] || cb.contextTokens;
+  const outputMultiplier = lang.outputMultiplier || 1;
 
   const results = {};
   let totalCost = 0;
@@ -119,15 +150,15 @@ function calcScenario(codebaseKey, featureKey, modelKey) {
 
   phaseNames.forEach((p) => {
     const mult = phases[p];
-    const totalInput = cb.contextTokens * mult.input + SKILL_OVERHEAD +
+    const totalInput = contextTokens * mult.input + SKILL_OVERHEAD +
       (p === "scaffold" ? SCAFFOLD_REF_OVERHEAD : 0);
-    const repeatedContext = cb.contextTokens * mult.input * REPEATED_CONTEXT_CACHE_SHARE;
+    const repeatedContext = contextTokens * mult.input * REPEATED_CONTEXT_CACHE_SHARE;
     const cachedInput = Math.min(totalInput, repeatedContext);
     const uncachedInput = totalInput - cachedInput;
     const cacheWrite = MODELS[modelKey].cacheWritePer1M
       ? repeatedContext * ANTHROPIC_CACHE_WRITE_SHARE
       : 0;
-    const baseOutput = 2000 * mult.output; // 2000 base output tokens × feature multiplier
+    const baseOutput = 2000 * mult.output * outputMultiplier; // language-adjusted output
     const cost = calcCost(modelKey, uncachedInput, cachedInput, cacheWrite, baseOutput);
     results[p] = {
       label: phaseLabels[p],
@@ -169,6 +200,7 @@ const PLAN_LABELS = {
 export default function App() {
   const [selectedModel, setSelectedModel] = useState("sonnet");
   const [selectedPlan, setSelectedPlan] = useState("enterprise");
+  const [selectedLanguage, setSelectedLanguage] = useState("typescript");
   const [activeScenario, setActiveScenario] = useState(null);
 
   const planCredits = PLAN_CREDITS[selectedPlan];
@@ -184,7 +216,7 @@ export default function App() {
 
   const grid = ["small", "mid", "large"].map((cb) =>
     ["small", "medium", "large"].map((feat) => {
-      const r = calcScenario(cb, feat, selectedModel);
+      const r = calcScenario(selectedLanguage, cb, feat, selectedModel);
       return { cb, feat, ...r };
     })
   );
@@ -206,6 +238,19 @@ export default function App() {
 
         {/* Controls */}
         <div style={{ display: "flex", gap: 16, marginBottom: 24, flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>Language</label>
+            <select
+              value={selectedLanguage}
+              onChange={(e) => setSelectedLanguage(e.target.value)}
+              style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "2px solid #e2e8f0", fontSize: 13, color: "#0f172a", background: "#fff", cursor: "pointer" }}
+            >
+              {Object.entries(LANGUAGE_PROFILES).map(([k, v]) => (
+                <option key={k} value={k}>{v.label}</option>
+              ))}
+            </select>
+          </div>
+
           <div style={{ flex: 1, minWidth: 200 }}>
             <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>Model</label>
             <div style={{ display: "flex", gap: 8 }}>
@@ -327,7 +372,7 @@ export default function App() {
                   Phase Breakdown — {SCENARIOS[activeScenario.cb].label} Codebase × {FEATURES[activeScenario.feat].label}
                 </h3>
                 <p style={{ margin: "4px 0 0", fontSize: 12, color: "#64748b" }}>
-                  Model: {MODELS[selectedModel].name} · Click any cell to see its breakdown
+                  Language: {LANGUAGE_PROFILES[selectedLanguage].label} · Model: {MODELS[selectedModel].name} · Click any cell to see its breakdown
                 </p>
               </div>
               <button
