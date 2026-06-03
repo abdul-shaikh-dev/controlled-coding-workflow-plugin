@@ -1,0 +1,16 @@
+{
+  "name": "controlled-coding-workflow-plugin",
+  "description": "Cost-aware controlled coding workflow for Copilot CLI and VS Code agent mode: discover, plan, scaffold, implement, review, and debug without runaway agent sessions.",
+  "version": "0.1.0",
+  "license": "MIT",
+  "keywords": [
+    "copilot",
+    "skills",
+    "workflow",
+    "scaffolding",
+    "code-review",
+    "cost-control"
+  ],
+  "category": "Productivity",
+  "skills": "skills/"
+}
