@@ -1,6 +1,6 @@
 ---
 name: controlled-coding-workflow
-description: Use this skill for medium or large codebase tasks where uncontrolled AI-assisted coding may cause messy architecture, large diffs, unnecessary abstractions, or wasted credits. Trigger when the user asks to plan, implement, refactor, review, debug, design, or scaffold a non-trivial code change, especially multi-file changes, API changes, integration work, architecture-sensitive changes, test strategy, dependency migrations, final diff reviews, module boundary decisions, codebase cleanup, or prompts such as "scaffold this", "create the files", "set up starter code", or "I want to start implementing". Do not use for one-line fixes, formatting-only changes, simple renaming, basic model/DTO creation, or documentation-only edits.
+description: Use when planning, scaffolding, implementing, reviewing, or debugging non-trivial code changes where uncontrolled AI coding could create messy architecture, large diffs, wasted credits, or unnecessary abstractions. Use for multi-file changes, API or integration work, migrations, refactors, and explicit scaffold requests.
 ---
 
 # Controlled Coding Workflow
@@ -78,14 +78,14 @@ Do not create or modify markdown files in the repository unless the user explici
 When markdown files are explicitly requested, use feature-specific structure:
 
 ```text
-docs/controlled-coding/<feature-name>/
+docs/controlled-coding/{feature-name}/
   discovery.md
   implementation-plan.md
   review.md
   debugging-notes.md
 ```
 
-For smaller tasks, use `docs/controlled-coding/<feature-name>.md`.
+For smaller tasks, use `docs/controlled-coding/{feature-name}.md`.
 
 Use one feature per file, lowercase kebab-case folder names, and split by milestone only when the plan grows large.
 
@@ -281,7 +281,7 @@ Save plan as artifact:
 Use the controlled-coding-workflow skill.
 Task: <describe>
 Create planning markdown artifacts.
-Save to docs/controlled-coding/<feature-name>/
+Save to docs/controlled-coding/{feature-name}/
 Start with discovery.md and implementation-plan.md only.
 Do not implement code or modify source files.
 ```
@@ -290,8 +290,8 @@ Scaffold:
 
 ```text
 Use the controlled-coding-workflow skill.
-Scaffold milestone <N> for feature: <feature-name>
-Plan: docs/controlled-coding/<feature-name>/implementation-plan.md
+Scaffold milestone <N> for feature: {feature-name}
+Plan: docs/controlled-coding/{feature-name}/implementation-plan.md
 Show dry-run summary first, wait for confirmation before creating files.
 ```
 

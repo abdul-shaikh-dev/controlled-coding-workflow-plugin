@@ -4,7 +4,7 @@ Reads an approved implementation plan, creates starter code files, then lets the
 
 This reference is loaded when the user requests scaffolding. It never plans. It never implements business logic. It scaffolds only.
 
-Always use scaffold mode after the plan phase. The plan must exist at `docs/controlled-coding/<feature-name>/implementation-plan.md` before scaffolding begins.
+Always use scaffold mode after the plan phase. The plan must exist at `docs/controlled-coding/{feature-name}/implementation-plan.md` before scaffolding begins.
 
 Use the same capable model that produced the plan. Do not switch models between planning and scaffolding unless there is a clear reason.
 
@@ -30,14 +30,14 @@ Switch to a feature branch before scaffolding.
 Locate the plan at:
 
 ```text
-docs/controlled-coding/<feature-name>/implementation-plan.md
+docs/controlled-coding/{feature-name}/implementation-plan.md
 ```
 
 If not found:
 
 ```text
 Scaffold aborted: no implementation plan found.
-Expected: docs/controlled-coding/<feature-name>/implementation-plan.md
+Expected: docs/controlled-coding/{feature-name}/implementation-plan.md
 Run the controlled-coding-workflow plan phase first.
 ```
 
@@ -59,7 +59,7 @@ Scaffold one milestone at a time. Never scaffold ahead.
 Before creating or modifying any file, output a dry-run and wait for explicit confirmation.
 
 ```text
-## Scaffold Dry-run: <feature-name> / Milestone <N>
+## Scaffold Dry-run: {feature-name} / Milestone <N>
 
 ### Files to create
 - `path/to/new_file` - <what it contains>
@@ -169,7 +169,7 @@ Every signature produced must follow these rules regardless of language:
 After scaffolding, always output a manifest.
 
 ```text
-## Scaffold Complete: <feature-name> / Milestone <N>
+## Scaffold Complete: {feature-name} / Milestone <N>
 
 ### Files created
 - `path/to/new_file`

@@ -36,9 +36,7 @@ Do not use it for one-line fixes, simple renames, formatting-only edits, or docu
 
 The interactive credit estimator lives in a separate repository:
 
-```text
-../copilot-credit-simulator
-```
+[copilot-credit-simulator](https://github.com/abdul-shaikh-dev/copilot-credit-simulator)
 
 Keeping the simulator separate prevents React/Vite package files and build output from bloating this skill plugin.
 
@@ -57,5 +55,11 @@ skills/controlled-coding-workflow/SKILL.md
 From this repository:
 
 ```powershell
-python C:\Users\abdul\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\controlled-coding-workflow
+python "$env:USERPROFILE\.codex\skills\.system\skill-creator\scripts\quick_validate.py" skills\controlled-coding-workflow
+```
+
+On macOS/Linux or Git Bash:
+
+```bash
+python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/controlled-coding-workflow
 ```
