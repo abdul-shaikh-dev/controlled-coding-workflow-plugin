@@ -63,7 +63,7 @@ Monthly credit allowances for reference:
 | Copilot Business promo | 3,000 | Existing org/enterprise customers, June 1 through September 1, 2026 |
 | Copilot Enterprise promo | 7,000 | Existing org/enterprise customers, June 1 through September 1, 2026 |
 
-For static real-world scenario estimates, see `references/project-simulations.md`. For interactive cost modelling across language, codebase, feature, and model combinations, use the optional sibling app repo `../copilot-credit-simulator`.
+For static real-world scenario estimates, see `references/project-simulations.md`. For interactive cost modelling across language, codebase, feature, and model combinations, use the optional [copilot-credit-simulator](https://github.com/abdul-shaikh-dev/copilot-credit-simulator) app.
 
 ## Key Principle
 

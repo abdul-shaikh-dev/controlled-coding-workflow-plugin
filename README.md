@@ -32,6 +32,12 @@ Use the skill for non-trivial implementation planning, refactors, code reviews, 
 
 Do not use it for one-line fixes, simple renames, formatting-only edits, or documentation-only tasks.
 
+## Reference Files
+
+- `references/model-selection.md` - current model and credit guidance.
+- `references/project-simulations.md` - real-world cost estimates across common stacks.
+- `references/scaffold.md` - scaffold-mode safety rules, dry-run format, and rollback guidance.
+
 ## Companion App
 
 The interactive credit estimator lives in a separate repository:
@@ -62,4 +68,10 @@ On macOS/Linux or Git Bash:
 
 ```bash
 python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/controlled-coding-workflow
+```
+
+Expected output:
+
+```text
+Skill is valid!
 ```
