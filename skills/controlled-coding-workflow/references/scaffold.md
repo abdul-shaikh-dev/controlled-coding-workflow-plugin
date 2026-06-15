@@ -4,7 +4,7 @@ Reads an approved implementation plan, creates starter code files, then lets the
 
 This reference is loaded when the user requests scaffolding. It never plans. It never implements business logic. It scaffolds only.
 
-Always use scaffold mode after the plan phase. The plan must exist at `docs/controlled-coding/{feature-name}/implementation-plan.md` before scaffolding begins.
+Always use scaffold mode after the plan phase. The approved plan must exist at `docs/controlled-coding/{feature-name}/implementation-plan.md` before scaffolding begins. Single-file planning notes are not scaffold inputs.
 
 Use the same capable model that produced the plan. Do not switch models between planning and scaffolding unless there is a clear reason.
 
@@ -38,8 +38,10 @@ If not found:
 ```text
 Scaffold aborted: no implementation plan found.
 Expected: docs/controlled-coding/{feature-name}/implementation-plan.md
-Run the controlled-coding-workflow plan phase first.
+Run the controlled-coding-workflow plan phase first and save the approved plan to the canonical path.
 ```
+
+If the user has a plan only in chat or in `docs/controlled-coding/{feature-name}.md`, stop and ask to save or migrate it to `docs/controlled-coding/{feature-name}/implementation-plan.md` before scaffolding.
 
 ### 3. Milestone check
 
@@ -216,6 +218,7 @@ For integration scaffold changes, revert only the exact planned signature or reg
 - Does not modify interfaces, contracts, or wiring files without the explicit integration scaffold exception.
 - Does not scaffold on main/master/trunk/develop.
 - Does not scaffold without an approved plan file.
+- Does not use single-file planning notes as scaffold input.
 - Does not scaffold multiple milestones at once.
 - Does not skip the dry-run confirmation step.
 - Does not produce full function bodies even if asked; redirect to controlled implementation.

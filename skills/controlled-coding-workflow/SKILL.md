@@ -5,7 +5,7 @@ description: Use when planning, scaffolding, implementing, reviewing, or debuggi
 
 # Controlled Coding Workflow
 
-Plan first. Scaffold only starter code. Let the developer fill bodies with IDE autocomplete. Review the diff against the plan.
+Plan first, even when the user asks to implement immediately. Scaffold only starter code. Let the developer fill bodies with IDE autocomplete. Review the diff against the plan.
 
 This skill is designed for Copilot CLI and VS Code agent mode. As a direct skill it lives in a `skills/controlled-coding-workflow/` directory. As a Copilot CLI plugin, the plugin root must include `plugin.json` pointing to `skills/`.
 
@@ -19,20 +19,20 @@ This skill is designed for Copilot CLI and VS Code agent mode. As a direct skill
 
 ### Mode A: Plan
 
-Use for discovery, planning, review, debugging, feasibility, and implementation guidance.
+Use for discovery, mandatory implementation planning, review, debugging, feasibility, and implementation guidance.
 
 ### Mode B: Scaffold
 
 Use only when the user explicitly asks to scaffold or create starter files from an approved plan. Read `references/scaffold.md` first.
 
-Default to Mode A unless the user clearly requests scaffold mode.
+Default to Mode A unless the user clearly requests scaffold mode. If the user asks to implement without a plan, still perform discovery and create the implementation plan before any code changes.
 
 ## Workflow
 
 ```text
 1. Discover: understand the codebase.
-2. Plan: write a controlled implementation plan with signatures and pseudocode only.
-3. Save plan: only when the user explicitly asks for files.
+2. Plan: write a controlled implementation plan with signatures and pseudocode only. This is mandatory for every coding task that uses this skill.
+3. Save plan: only when the user explicitly asks for files, or when scaffolding will be requested from a plan file.
 4. Scaffold: create starter files milestone by milestone.
 5. Implement: fill bodies only after explicit implementation permission.
 6. Review: compare diff against plan.
@@ -49,6 +49,8 @@ Do not write, edit, or apply full implementation code unless the user explicitly
 Stop after producing one of: discovery summary, implementation plan, skeletons/signatures, coding map, review report, targeted fix plan, debugging analysis, or scaffold output.
 
 Implementation triggers: "Implement this", "Write the code", "Apply the patch", "Generate the full implementation", "Make the changes", "Update the code."
+
+Implementation triggers grant permission to edit code only after a controlled implementation plan has been produced or updated for the requested scope. If no plan exists, produce the plan first and pause for confirmation before editing source files.
 
 Scaffold triggers: "Scaffold this", "Create starter files", "Create the files from the plan", "Set up starter code", "Scaffold milestone N", "I want to start implementing."
 
@@ -71,11 +73,13 @@ Not allowed without implementation request: full function bodies, full-file code
 
 ## Planning Artifact Rules
 
-By default, produce discovery, plans, reviews, and debugging notes in the assistant response only.
+Every coding task that uses this skill must produce an `Implementation Plan` before implementation, scaffolding, or targeted fixes. This applies even when the user asks directly for code changes.
+
+By default, produce discovery, implementation plans, reviews, and debugging notes in the assistant response only.
 
 Do not create or modify markdown files in the repository unless the user explicitly requests documentation or file creation.
 
-When markdown files are explicitly requested, use feature-specific structure:
+When markdown files are explicitly requested, use the canonical feature-specific structure:
 
 ```text
 docs/controlled-coding/{feature-name}/
@@ -85,9 +89,9 @@ docs/controlled-coding/{feature-name}/
   debugging-notes.md
 ```
 
-For smaller tasks, use `docs/controlled-coding/{feature-name}.md`.
+Use one feature per folder, lowercase kebab-case folder names, and split by milestone only when the plan grows large.
 
-Use one feature per file, lowercase kebab-case folder names, and split by milestone only when the plan grows large.
+Do not use single-file planning artifacts for scaffoldable work. Scaffold mode requires `docs/controlled-coding/{feature-name}/implementation-plan.md`.
 
 ## Phase 1: Discovery
 
@@ -158,7 +162,7 @@ Expected result: ...
 
 ## Phase 3: Controlled Implementation
 
-Enter this phase only when implementation is explicitly requested. Follow the plan step by step.
+Enter this phase only when implementation is explicitly requested and a controlled implementation plan exists for the requested scope. Follow the plan step by step.
 
 Output per completed step:
 
@@ -198,7 +202,7 @@ Approve / Approve after fixes / Needs rework
 
 ## Phase 5: Targeted Fixes
 
-Fix only what review found. Do not rewrite the whole feature.
+Fix only what review found. Do not rewrite the whole feature. If a targeted fix changes the plan's scope, contract, data flow, or verification strategy, update the implementation plan before editing code.
 
 ```text
 ## Targeted Fix Plan
@@ -275,6 +279,15 @@ include acceptance criteria and what must not change,
 do not create markdown files unless explicitly requested.
 ```
 
+Implement:
+
+```text
+Use the controlled-coding-workflow skill.
+Task: <describe>
+First create or update the controlled implementation plan for this scope.
+After I confirm the plan, implement only the approved step.
+```
+
 Save plan as artifact:
 
 ```text
@@ -317,6 +330,8 @@ propose the smallest fix, and give verification steps.
 ```
 
 ## Final Rule
+
+Always create or update the implementation plan before code edits for non-trivial coding work.
 
 Unless explicitly asked to implement or scaffold, respond only with a discovery summary, implementation plan, skeleton/signatures, coding map, review report, targeted fix plan, or debugging analysis.
 

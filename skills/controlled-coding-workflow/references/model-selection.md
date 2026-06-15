@@ -41,13 +41,19 @@ Frontier models, such as GPT-5.5 or Claude Opus, are useful for unusually high-r
 
 1 AI Credit = $0.01 USD. Copilot Chat, Copilot CLI, Copilot cloud agent, Copilot Spaces, Spark, and third-party coding agents consume AI credits. Code completions and next edit suggestions are not billed in AI credits on paid plans.
 
-Rough estimates for a complete feature workflow, using discovery, plan, scaffold, and review with GPT-5.4 or Claude Sonnet 4.6:
+Rough estimates for a complete controlled workflow, using discovery, mandatory implementation plan, scaffold, and review with GPT-5.4 or Claude Sonnet 4.6:
 
-| Codebase | Small feature | Medium feature | Large feature |
+| Codebase | Focused change | Feature slice | Cross-boundary change |
 |---|---:|---:|---:|
 | Small, about 5k-20k LOC | about 35 credits | about 120 credits | about 300 credits |
 | Medium, about 50k-150k LOC | about 120 credits | about 290 credits | about 700 credits |
 | Large, about 300k+ LOC | about 300 credits | about 700 credits | about 1,400 credits |
+
+Work scope meaning:
+
+- Focused change: localized behavior, targeted verification, usually 1-3 files.
+- Feature slice: complete behavior inside a bounded area, usually several related files.
+- Cross-boundary change: modules, services, shared contracts, migrations, or integration wiring.
 
 These are approximations. Actual consumption depends on model choice, cached context, output size, and how much repository context is passed per invocation.
 
@@ -63,7 +69,9 @@ Monthly credit allowances for reference:
 | Copilot Business promo | 3,000 | Existing org/enterprise customers, June 1 through September 1, 2026 |
 | Copilot Enterprise promo | 7,000 | Existing org/enterprise customers, June 1 through September 1, 2026 |
 
-For static real-world scenario estimates, see `references/project-simulations.md`. For interactive cost modelling across language, codebase, feature, and model combinations, use the optional [copilot-credit-simulator](https://github.com/abdul-shaikh-dev/copilot-credit-simulator) app.
+Promo allowances are date-sensitive. Re-check GitHub's billing docs after September 1, 2026 before quoting them.
+
+For static real-world scenario estimates, see `references/project-simulations.md`. For interactive cost modelling across project stack, codebase size, work scope, comparison baseline, plan, and model combinations, use the optional [copilot-credit-simulator](https://github.com/abdul-shaikh-dev/copilot-credit-simulator) app.
 
 ## Key Principle
 

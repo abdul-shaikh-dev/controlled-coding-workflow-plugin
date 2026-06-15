@@ -5,7 +5,7 @@ Copilot skill plugin for keeping AI-assisted coding bounded, reviewable, and cos
 The core skill guides an agent through a controlled loop:
 
 1. Discover the relevant codebase context.
-2. Plan the change before writing code.
+2. Create an implementation plan before writing code, even when the user asks to implement immediately.
 3. Scaffold only starter files when explicitly requested.
 4. Let the developer fill implementation bodies with IDE autocomplete.
 5. Review the diff against the original plan.
@@ -28,7 +28,7 @@ skills/
 
 ## Skill
 
-Use the skill for non-trivial implementation planning, refactors, code reviews, debugging, scaffolding, dependency migrations, and architecture-sensitive work.
+Use the skill for non-trivial implementation planning, refactors, code reviews, debugging, scaffolding, dependency migrations, and architecture-sensitive work. For coding tasks that use this skill, the implementation plan is mandatory before source edits.
 
 Do not use it for one-line fixes, simple renames, formatting-only edits, or documentation-only tasks.
 
