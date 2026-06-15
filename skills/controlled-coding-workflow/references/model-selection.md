@@ -71,7 +71,7 @@ Monthly credit allowances for reference:
 
 Promo allowances are date-sensitive. Re-check GitHub's billing docs after September 1, 2026 before quoting them.
 
-For static real-world scenario estimates, see `references/project-simulations.md`. For interactive cost modelling across project stack, codebase size, work scope, comparison baseline, plan, and model combinations, use the optional [copilot-credit-simulator](https://github.com/abdul-shaikh-dev/copilot-credit-simulator) app.
+For detailed scenario estimates and interactive cost modelling across project stack, codebase size, work scope, comparison baseline, plan, and model combinations, use the separate [copilot-credit-simulator](https://github.com/abdul-shaikh-dev/copilot-credit-simulator) app.
 
 ## Key Principle
 

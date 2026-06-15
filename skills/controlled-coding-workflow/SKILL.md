@@ -12,7 +12,6 @@ This skill is designed for Copilot CLI and VS Code agent mode. As a direct skill
 ## References
 
 - For current billing assumptions and model selection, read `references/model-selection.md`.
-- For language-specific real-world project simulations, read `references/project-simulations.md`.
 - For scaffold mode, read `references/scaffold.md` before touching files.
 
 ## Mode Selection

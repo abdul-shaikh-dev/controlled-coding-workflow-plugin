@@ -22,7 +22,6 @@ skills/
     SKILL.md
     references/
       model-selection.md
-      project-simulations.md
       scaffold.md
 ```
 
@@ -35,7 +34,6 @@ Do not use it for one-line fixes, simple renames, formatting-only edits, or docu
 ## Reference Files
 
 - `references/model-selection.md` - current model and credit guidance.
-- `references/project-simulations.md` - real-world cost estimates across common stacks.
 - `references/scaffold.md` - scaffold-mode safety rules, dry-run format, and rollback guidance.
 
 ## Companion App
