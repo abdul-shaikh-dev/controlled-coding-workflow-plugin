@@ -1,84 +1,64 @@
 ---
 name: controlled-coding-workflow
-description: Use when planning, scaffolding, implementing, reviewing, or debugging non-trivial code changes where uncontrolled AI coding could create messy architecture, large diffs, wasted credits, or unnecessary abstractions. Use for multi-file changes, API or integration work, migrations, refactors, and explicit scaffold requests.
+description: Use when planning, implementing, reviewing, or debugging non-trivial code changes where uncontrolled AI coding could create large diffs, wasted credits, messy architecture, or unnecessary abstractions. Use for multi-file changes, API or integration work, migrations, refactors, and architecture-sensitive fixes.
 ---
 
 # Controlled Coding Workflow
 
-Plan first, even when the user asks to implement immediately. Scaffold only starter code. Let the developer fill bodies with IDE autocomplete. Review the diff against the plan.
+Plan first, even when the user asks to implement immediately. Keep edits scoped to an approved step. Review the diff against the plan.
 
-This skill is designed for Copilot CLI and VS Code agent mode. As a direct skill it lives in a `skills/controlled-coding-workflow/` directory. As a Copilot CLI plugin, the plugin root must include `plugin.json` pointing to `skills/`.
+This skill is the core workflow. For starter-file scaffolding, use `controlled-coding-scaffold`.
 
-## References
+For pricing examples and cost comparisons, use the separate [copilot-credit-simulator](https://github.com/abdul-shaikh-dev/copilot-credit-simulator) app.
 
-- For current billing assumptions and model selection, read `references/model-selection.md`.
-- For scaffold mode, read `references/scaffold.md` before touching files.
+## When To Use
+
+Use for multi-file changes, public contract changes, integrations, migrations, refactors, architecture-sensitive fixes, code reviews, and debugging that crosses module boundaries.
+
+Do not use for one-line fixes, simple renames, formatting-only edits, typo fixes, or documentation-only tasks.
+
+## Hard Gates
+
+Every coding task that uses this skill must produce an `Implementation Plan` before source edits, targeted fixes, or scaffolding.
+
+Implementation triggers such as "make the changes", "write the code", or "apply the patch" grant edit permission only after the plan exists and the user has confirmed the approved scope.
+
+Do not create or modify repository files unless implementation, scaffold, or documentation artifact creation is explicitly requested.
 
 ## Mode Selection
 
-### Mode A: Plan
+| Request | Mode |
+|---|---|
+| "Plan this" / "How should we do this?" / "Design this" | Discovery and plan |
+| "Make the changes" / "Implement this" | Plan first, pause, then implement approved step |
+| "Scaffold this" / "Create starter files" | Use `controlled-coding-scaffold` |
+| "Review this" | Review diff against the plan |
+| "Debug this" | Debugging analysis and minimal fix plan |
+| Ambiguous request | Default to discovery and plan |
 
-Use for discovery, mandatory implementation planning, review, debugging, feasibility, and implementation guidance.
+## Model Guidance
 
-### Mode B: Scaffold
-
-Use only when the user explicitly asks to scaffold or create starter files from an approved plan. Read `references/scaffold.md` first.
-
-Default to Mode A unless the user clearly requests scaffold mode. If the user asks to implement without a plan, still perform discovery and create the implementation plan before any code changes.
+Use one capable model consistently across discovery, planning, review, and debugging. Avoid economy or mini models for architecture-sensitive work because weak plans usually cost more through rework. Use expensive frontier models only for unusually ambiguous, high-risk, or cross-system changes. Do not switch models mid-feature unless there is a clear reason.
 
 ## Workflow
 
 ```text
-1. Discover: understand the codebase.
-2. Plan: write a controlled implementation plan with signatures and pseudocode only. This is mandatory for every coding task that uses this skill.
-3. Save plan: only when the user explicitly asks for files, or when scaffolding will be requested from a plan file.
-4. Scaffold: create starter files milestone by milestone.
-5. Implement: fill bodies only after explicit implementation permission.
-6. Review: compare diff against plan.
-7. Fix: apply targeted fixes only.
-8. Debug: enter whenever a bug appears.
+1. Discover: inspect relevant codebase context.
+2. Plan: create a controlled implementation plan with signatures and pseudocode only.
+3. Confirm: wait before editing source files.
+4. Implement or scaffold: work only on the approved step.
+5. Review: compare the diff against the plan.
+6. Fix: apply targeted fixes only.
+7. Debug: enter whenever a bug appears.
 ```
 
-If a plan assumption proves wrong mid-implementation, stop, document the discrepancy, and return to planning before continuing.
+If a plan assumption proves wrong mid-implementation, stop, document the discrepancy, update the plan, and ask before continuing.
 
-## Implementation Permission Gate
+## Planning Artifacts
 
-Do not write, edit, or apply full implementation code unless the user explicitly requests implementation.
+By default, keep discovery, plans, reviews, and debugging notes in the assistant response.
 
-Stop after producing one of: discovery summary, implementation plan, skeletons/signatures, coding map, review report, targeted fix plan, debugging analysis, or scaffold output.
-
-Implementation triggers: "Implement this", "Write the code", "Apply the patch", "Generate the full implementation", "Make the changes", "Update the code."
-
-Implementation triggers grant permission to edit code only after a controlled implementation plan has been produced or updated for the requested scope. If no plan exists, produce the plan first and pause for confirmation before editing source files.
-
-Scaffold triggers: "Scaffold this", "Create starter files", "Create the files from the plan", "Set up starter code", "Scaffold milestone N", "I want to start implementing."
-
-Even when implementation or scaffolding is permitted, work only on the approved step or explicitly requested scope.
-
-Do not run file-editing tools, apply patches, create files, or modify the repository unless implementation or scaffold mode is explicitly requested.
-
-| Request | Mode |
-|---|---|
-| "Plan this" / "How should we do this?" / "Design this" | Plan only |
-| "Scaffold this" / "Create the files" / "Set up starter code" | Scaffold |
-| "Review this" | Review only |
-| "What files are needed?" / "Give me steps" | Identify / steps only |
-| "Can this be done?" | Feasibility only |
-| "Debug this" | Debug only |
-
-Allowed without implementation request: function signatures, type/interface definitions, short pseudocode snippets, empty skeletons, file lists, step-by-step instructions, test names, acceptance criteria, review comments, debugging checks.
-
-Not allowed without implementation request: full function bodies, full-file code, large patches, direct file edits, multi-file generated implementations.
-
-## Planning Artifact Rules
-
-Every coding task that uses this skill must produce an `Implementation Plan` before implementation, scaffolding, or targeted fixes. This applies even when the user asks directly for code changes.
-
-By default, produce discovery, implementation plans, reviews, and debugging notes in the assistant response only.
-
-Do not create or modify markdown files in the repository unless the user explicitly requests documentation or file creation.
-
-When markdown files are explicitly requested, use the canonical feature-specific structure:
+When markdown artifacts are explicitly requested, or when scaffolding will use a plan file, use:
 
 ```text
 docs/controlled-coding/{feature-name}/
@@ -88,15 +68,15 @@ docs/controlled-coding/{feature-name}/
   debugging-notes.md
 ```
 
-Use one feature per folder, lowercase kebab-case folder names, and split by milestone only when the plan grows large.
+Use one feature per folder, lowercase kebab-case names, and split by milestone only when the plan grows large.
 
 Do not use single-file planning artifacts for scaffoldable work. Scaffold mode requires `docs/controlled-coding/{feature-name}/implementation-plan.md`.
 
 ## Phase 1: Discovery
 
-Before planning, inspect the relevant context. Do not write implementation code here.
+Inspect the relevant context before planning. Do not write implementation code here.
 
-Identify existing architecture style, relevant files and modules, patterns to reuse, similar implementations, module boundaries, likely files to add or modify, risks, and unknowns.
+Identify architecture style, relevant files, patterns to reuse, module boundaries, likely files to add or modify, risks, unknowns, and recommended direction.
 
 ```text
 ## Discovery Summary
@@ -109,26 +89,19 @@ Identify existing architecture style, relevant files and modules, patterns to re
 ### Recommended Direction
 ```
 
-If context is missing, state what needs to be inspected before proceeding.
+## Phase 2: Implementation Plan
 
-## Phase 2: Controlled Implementation Plan
-
-Create a plan detailed enough for the implementer to execute without making design decisions. Use signatures, types, and pseudocode only.
+Create a plan detailed enough for an implementer to execute without making design decisions. Use signatures, types, and pseudocode only.
 
 Step size guideline: if one step touches more than 3 files, split it.
 
-Scope bounding: if the task is too large to plan in one pass, split into milestones and detail only the first. Note remaining milestones at the top.
-
-Plan must include target design, files to add/modify, public contracts, data flow, error handling, config changes, test plan, step-by-step order, acceptance criteria, and what must not change.
-
-Starter code may include signatures, docstrings or intent comments, short pseudocode comments, and placeholders such as `pass`, `...`, `TODO`, or language equivalents. Do not include real business logic, complete patches, concrete database/API/filesystem/auth/integration logic, or finished error-handling behavior.
+The plan must include target design, files to add or modify, public contracts, data flow, error handling, config changes, test plan, step-by-step order, acceptance criteria, and what must not change.
 
 ```text
 ## Implementation Plan
 
 ### Milestones
 - Milestone 1: <name> - detail below
-- Milestone 2: <name> - not yet detailed
 
 ### Target Design
 ### Files To Add
@@ -141,7 +114,6 @@ Starter code may include signatures, docstrings or intent comments, short pseudo
 ### Config / Environment Changes
 
 ### Implementation Steps
-
 #### Step 1: <step name>
 Files: `path/to/file`
 Change: ...
@@ -159,9 +131,13 @@ Expected result: ...
 ### Do Not Change
 ```
 
+Starter code may include signatures, docstrings or intent comments, short pseudocode comments, and placeholders such as `pass`, `...`, `TODO`, or language equivalents. Do not include real business logic, concrete database/API/filesystem/auth/integration logic, or finished error-handling behavior.
+
 ## Phase 3: Controlled Implementation
 
-Enter this phase only when implementation is explicitly requested and a controlled implementation plan exists for the requested scope. Follow the plan step by step.
+Enter this phase only when implementation is explicitly requested and a plan exists for the requested scope.
+
+Follow the plan step by step, keep changes small, do not modify unrelated files, do not introduce unplanned abstractions, preserve existing behavior unless the plan explicitly changes it, and do not add dependencies without justification.
 
 Output per completed step:
 
@@ -170,38 +146,32 @@ Output per completed step:
 ### Files Changed
 - `path/to/file` - what changed
 ### Summary
-### Diff / Key Changes
-<minimal patch or annotated excerpt>
-### Tests Added or Updated
+### Tests Added Or Updated
 ### Notes / Assumptions
 ```
-
-Follow the plan step by step, keep changes small, do not modify unrelated files, do not introduce unplanned abstractions, preserve existing behavior unless the plan explicitly changes it, do not mix refactoring and feature work unless planned, and do not add dependencies without justification.
 
 ## Phase 4: Review
 
 Review the diff against the original plan. Do not rewrite unless explicitly requested.
 
-Checklist: plan adherence, scope control, unnecessary abstractions, module boundaries, edge cases, error handling, test quality, hidden behavior changes, naming clarity, file placement, diff size, over-engineering, and risk to existing behavior.
+Check plan adherence, scope control, unnecessary abstractions, module boundaries, edge cases, error handling, test quality, hidden behavior changes, naming clarity, file placement, diff size, over-engineering, and risk to existing behavior.
 
 ```text
 ## Review Summary
 ### Overall Assessment
 Approve / Approve after fixes / Needs rework
-### What Looks Good
 ### Must Fix
 ### Should Fix
-### Nice To Have
-### Architecture Concerns
 ### Test Gaps
 ### Risky Changes
 ### Recommended Patch Strategy
-### Final Recommendation
 ```
 
 ## Phase 5: Targeted Fixes
 
-Fix only what review found. Do not rewrite the whole feature. If a targeted fix changes the plan's scope, contract, data flow, or verification strategy, update the implementation plan before editing code.
+Fix only what review found. Do not rewrite the whole feature.
+
+If a targeted fix changes scope, contracts, data flow, or verification strategy, update the implementation plan before editing code.
 
 ```text
 ## Targeted Fix Plan
@@ -215,9 +185,9 @@ Expected result: ...
 
 ## Phase 6: Debugging
 
-Enter here any time a bug is reported, independent of the main loop.
+Use for failures crossing module boundaries, async/concurrency issues, DI/wiring issues, auth/security bugs, persistence bugs, external integration failures, orchestration bugs, bugs that failed more than once, or bugs where the obvious fix may break other behavior.
 
-Use for failures crossing module boundaries, async/concurrency issues, DI/wiring issues, auth/security bugs, persistence bugs, external integration failures, orchestration bugs, bugs that failed more than once, bugs where the obvious fix may break other behavior.
+Start from the failure message and changed files, identify the layer first, suggest checks before fixes, prefer the smallest fix, and explain verification.
 
 ```text
 ## Debugging Analysis
@@ -232,40 +202,15 @@ Use for failures crossing module boundaries, async/concurrency issues, DI/wiring
 ### Prevention
 ```
 
-Start from the failure message and changed files, identify the layer first, suggest checks before fixes, prefer the smallest fix, and explain verification.
+## Quality Rules
 
-## Code Quality Rules
+Follow the project's existing style first. Use clear names, focused functions, simple readable code, minimal diffs, explicit file lists, and behavior-focused tests.
 
-Follow the project's existing style first.
+Do not introduce new frameworks, DI systems, base classes, generic abstractions, plugin systems, config patterns, build patterns, or dependencies unless the project already uses them or the plan clearly justifies them.
 
-Code: clear names, focused functions, simple readable code, no unnecessary abstractions, no hidden global state, no broad exception catching unless justified, no unnecessary dependencies, comments explain why not what, clear module boundaries, preserve existing behavior, tests describe behavior clearly.
+Avoid full repo rewrites, repeated whole-codebase scans, large unscoped tasks, combining planning plus implementation plus review in one step, and rewriting files when a patch is enough.
 
-Architecture: do not introduce new frameworks, DI systems, base classes, generic abstractions, plugin systems, config patterns, or build patterns unless the project already uses them or the plan clearly justifies them.
-
-For modular or vertical-slice projects: keep feature logic inside the relevant module, avoid leaking into shared modules, use shared modules only for genuinely reusable infrastructure, keep wiring explicit, and make features easy to disable or remove.
-
-## Scope Protection
-
-Avoid full repo rewrites, repeated whole-codebase scans, large unscoped tasks, unnecessary boilerplate, combining planning plus implementation plus review in one step, large diffs without a plan, and rewriting files when a patch is enough.
-
-Prefer discovery first, plan before code, small steps, minimal diffs, explicit file lists, clear acceptance criteria, review against the original plan, targeted fixes, and reuse of existing patterns.
-
-## Delegation
-
-Delegate test scaffolding, documentation, simple local patches, repetitive transformations, and single implementation steps.
-
-Do not delegate architecture decisions, security design, complex refactors, cross-module design, dependency wiring, async/concurrency design, or major error-handling design.
-
-```text
-Implement only Step <N> from the Controlled Coding Workflow plan.
-Allowed files: <file path>
-Do: <specific task>
-Do not: change public interfaces / modify unrelated files / introduce new abstractions / rewrite full files / change behavior outside this step
-Tests: <test cases>
-Return: minimal patch/diff + short explanation + assumptions made
-```
-
-## Standard Prompt Templates
+## Standard Prompts
 
 Plan:
 
@@ -287,53 +232,16 @@ First create or update the controlled implementation plan for this scope.
 After I confirm the plan, implement only the approved step.
 ```
 
-Save plan as artifact:
-
-```text
-Use the controlled-coding-workflow skill.
-Task: <describe>
-Create planning markdown artifacts.
-Save to docs/controlled-coding/{feature-name}/
-Start with discovery.md and implementation-plan.md only.
-Do not implement code or modify source files.
-```
-
-Scaffold:
-
-```text
-Use the controlled-coding-workflow skill.
-Scaffold milestone <N> for feature: {feature-name}
-Plan: docs/controlled-coding/{feature-name}/implementation-plan.md
-Show dry-run summary first, wait for confirmation before creating files.
-```
-
 Review:
 
 ```text
 Use the controlled-coding-workflow skill.
 Review this diff against the original plan.
-Check: plan adherence, scope, abstractions, module boundaries,
-edge cases, test quality, over-engineering, risky changes.
 Give targeted comments and a minimal fix plan. Do not rewrite everything.
-```
-
-Debug:
-
-```text
-Use the controlled-coding-workflow skill.
-Debug this issue.
-Context: <what changed>
-Error: <paste>
-Identify the likely layer, give top causes, suggest checks to run,
-propose the smallest fix, and give verification steps.
 ```
 
 ## Final Rule
 
 Always create or update the implementation plan before code edits for non-trivial coding work.
 
-Unless explicitly asked to implement or scaffold, respond only with a discovery summary, implementation plan, skeleton/signatures, coding map, review report, targeted fix plan, or debugging analysis.
-
 If the request is ambiguous, default to planning, review, or debugging mode, not implementation mode.
-
-Do not create or modify repository files unless the user explicitly requests it.

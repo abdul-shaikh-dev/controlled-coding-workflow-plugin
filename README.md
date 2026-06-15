@@ -20,21 +20,17 @@ plugin.json
 skills/
   controlled-coding-workflow/
     SKILL.md
-    references/
-      model-selection.md
-      scaffold.md
+  controlled-coding-scaffold/
+    SKILL.md
 ```
 
-## Skill
+## Skills
 
-Use the skill for non-trivial implementation planning, refactors, code reviews, debugging, scaffolding, dependency migrations, and architecture-sensitive work. For coding tasks that use this skill, the implementation plan is mandatory before source edits.
+Use `controlled-coding-workflow` for non-trivial implementation planning, refactors, code reviews, debugging, dependency migrations, and architecture-sensitive work. For coding tasks that use this skill, the implementation plan is mandatory before source edits.
 
-Do not use it for one-line fixes, simple renames, formatting-only edits, or documentation-only tasks.
+Use `controlled-coding-scaffold` only when explicitly scaffolding starter files from an approved implementation plan.
 
-## Reference Files
-
-- `references/model-selection.md` - current model and credit guidance.
-- `references/scaffold.md` - scaffold-mode safety rules, dry-run format, and rollback guidance.
+Do not use either skill for one-line fixes, simple renames, formatting-only edits, or documentation-only tasks.
 
 ## Companion App
 
@@ -48,10 +44,11 @@ Keeping the simulator separate prevents React/Vite package files and build outpu
 
 Install this folder as a Copilot CLI plugin using the plugin installation flow for local plugins.
 
-For direct skill use, the important entry point is:
+For direct skill use, the main entry points are:
 
 ```text
 skills/controlled-coding-workflow/SKILL.md
+skills/controlled-coding-scaffold/SKILL.md
 ```
 
 ## Validation
@@ -60,12 +57,14 @@ From this repository:
 
 ```powershell
 python "$env:USERPROFILE\.codex\skills\.system\skill-creator\scripts\quick_validate.py" skills\controlled-coding-workflow
+python "$env:USERPROFILE\.codex\skills\.system\skill-creator\scripts\quick_validate.py" skills\controlled-coding-scaffold
 ```
 
 On macOS/Linux or Git Bash:
 
 ```bash
 python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/controlled-coding-workflow
+python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/controlled-coding-scaffold
 ```
 
 Expected output:
