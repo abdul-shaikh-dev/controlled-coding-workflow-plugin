@@ -1,11 +1,11 @@
 ---
 name: controlled-coding-scaffold
-description: Use when the user explicitly asks to scaffold starter files, create skeleton files, or set up placeholder code from an approved controlled-coding-workflow implementation plan without writing business logic.
+description: Use when the user explicitly asks to scaffold starter files, create skeleton files, or set up placeholder code from an approved controlled-coding-plan implementation plan without writing business logic.
 ---
 
 # Controlled Coding Scaffold
 
-Create starter files from an approved `controlled-coding-workflow` implementation plan. Never plan here. Never implement business logic.
+Create starter files from an approved `controlled-coding-plan` implementation plan. Never plan here. Never implement business logic.
 
 The approved plan must exist at `docs/controlled-coding/{feature-name}/implementation-plan.md` before scaffolding begins. Single-file planning notes and chat-only plans are not scaffold inputs.
 
@@ -41,7 +41,7 @@ If not found:
 ```text
 Scaffold aborted: no implementation plan found.
 Expected: docs/controlled-coding/{feature-name}/implementation-plan.md
-Run the controlled-coding-workflow plan phase first and save the approved plan to the canonical path.
+Run `controlled-coding-plan` first and save the approved plan to the canonical path.
 ```
 
 If the user has a plan only in chat or in `docs/controlled-coding/{feature-name}.md`, stop and ask to save or migrate it to the canonical path before scaffolding.
@@ -194,4 +194,4 @@ For integration scaffold changes, revert only the exact planned signature or reg
 - Does not use single-file planning notes as scaffold input.
 - Does not scaffold multiple milestones at once.
 - Does not skip dry-run confirmation.
-- Does not produce full function bodies even if asked; redirect to `controlled-coding-workflow`.
+- Does not produce full function bodies even if asked; redirect to `controlled-coding`.

@@ -18,19 +18,27 @@ This is intended for medium and large codebase tasks where unconstrained agent s
 ```text
 plugin.json
 skills/
-  controlled-coding-workflow/
+  controlled-coding/
+    SKILL.md
+  controlled-coding-plan/
     SKILL.md
   controlled-coding-scaffold/
+    SKILL.md
+  controlled-coding-review/
     SKILL.md
 ```
 
 ## Skills
 
-Use `controlled-coding-workflow` for non-trivial implementation planning, refactors, code reviews, debugging, dependency migrations, and architecture-sensitive work. For coding tasks that use this skill, the implementation plan is mandatory before source edits.
+Use `controlled-coding` for the simple umbrella workflow. It routes non-trivial implementation planning, scoped implementation, scaffolding, review, debugging, dependency migrations, and architecture-sensitive work.
+
+Use `controlled-coding-plan` when you specifically want discovery and an implementation plan before edits.
 
 Use `controlled-coding-scaffold` only when explicitly scaffolding starter files from an approved implementation plan.
 
-Do not use either skill for one-line fixes, simple renames, formatting-only edits, or documentation-only tasks.
+Use `controlled-coding-review` when you specifically want a diff reviewed against an approved plan and a targeted fix plan.
+
+For coding tasks that use this plugin, the implementation plan is mandatory before source edits. Do not use these skills for one-line fixes, simple renames, formatting-only edits, or documentation-only tasks.
 
 ## Companion App
 
@@ -47,8 +55,10 @@ Install this folder as a Copilot CLI plugin using the plugin installation flow f
 For direct skill use, the main entry points are:
 
 ```text
-skills/controlled-coding-workflow/SKILL.md
+skills/controlled-coding/SKILL.md
+skills/controlled-coding-plan/SKILL.md
 skills/controlled-coding-scaffold/SKILL.md
+skills/controlled-coding-review/SKILL.md
 ```
 
 ## Validation
@@ -56,15 +66,19 @@ skills/controlled-coding-scaffold/SKILL.md
 From this repository:
 
 ```powershell
-python "$env:USERPROFILE\.codex\skills\.system\skill-creator\scripts\quick_validate.py" skills\controlled-coding-workflow
+python "$env:USERPROFILE\.codex\skills\.system\skill-creator\scripts\quick_validate.py" skills\controlled-coding
+python "$env:USERPROFILE\.codex\skills\.system\skill-creator\scripts\quick_validate.py" skills\controlled-coding-plan
 python "$env:USERPROFILE\.codex\skills\.system\skill-creator\scripts\quick_validate.py" skills\controlled-coding-scaffold
+python "$env:USERPROFILE\.codex\skills\.system\skill-creator\scripts\quick_validate.py" skills\controlled-coding-review
 ```
 
 On macOS/Linux or Git Bash:
 
 ```bash
-python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/controlled-coding-workflow
+python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/controlled-coding
+python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/controlled-coding-plan
 python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/controlled-coding-scaffold
+python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/controlled-coding-review
 ```
 
 Expected output:
