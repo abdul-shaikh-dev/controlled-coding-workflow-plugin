@@ -1,33 +1,36 @@
-# Scaffold Reference
+---
+name: controlled-coding-scaffold
+description: Use when the user explicitly asks to scaffold starter files, create skeleton files, or set up placeholder code from an approved controlled-coding-plan implementation plan without writing business logic.
+---
 
-Reads an approved implementation plan, creates starter code files, then lets the developer fill bodies with IDE autocomplete.
+# Controlled Coding Scaffold
 
-This reference is loaded when the user requests scaffolding. It never plans. It never implements business logic. It scaffolds only.
+Create starter files from an approved `controlled-coding-plan` implementation plan. Never plan here. Never implement business logic.
 
-Always use scaffold mode after the plan phase. The plan must exist at `docs/controlled-coding/{feature-name}/implementation-plan.md` before scaffolding begins.
+The approved plan must exist at `docs/controlled-coding/{feature-name}/implementation-plan.md` before scaffolding begins. Single-file planning notes and chat-only plans are not scaffold inputs.
 
-Use the same capable model that produced the plan. Do not switch models between planning and scaffolding unless there is a clear reason.
+Use the same capable model that produced the plan unless there is a clear reason to switch.
 
-## Pre-flight Checks
+## Pre-Flight Checks
 
-Run all checks before touching any file. If any fail, stop and report.
+Run all checks before touching files. If any fail, stop and report.
 
-### 1. Branch check
+### 1. Branch Check
 
 ```bash
 git branch --show-current
 ```
 
-If the current branch is `main`, `master`, `trunk`, or `develop`, refuse and output:
+If the current branch is `main`, `master`, `trunk`, or `develop`, refuse:
 
 ```text
 Scaffold aborted: you are on branch '<branch>'.
 Switch to a feature branch before scaffolding.
 ```
 
-### 2. Plan file check
+### 2. Plan File Check
 
-Locate the plan at:
+Expected path:
 
 ```text
 docs/controlled-coding/{feature-name}/implementation-plan.md
@@ -38,10 +41,12 @@ If not found:
 ```text
 Scaffold aborted: no implementation plan found.
 Expected: docs/controlled-coding/{feature-name}/implementation-plan.md
-Run the controlled-coding-workflow plan phase first.
+Run `controlled-coding-plan` first and save the approved plan to the canonical path.
 ```
 
-### 3. Milestone check
+If the user has a plan only in chat or in `docs/controlled-coding/{feature-name}.md`, stop and ask to save or migrate it to the canonical path before scaffolding.
+
+### 3. Milestone Check
 
 If the plan has multiple milestones, confirm which to scaffold:
 
@@ -54,7 +59,7 @@ Which milestone should I scaffold? Default: Milestone 1.
 
 Scaffold one milestone at a time. Never scaffold ahead.
 
-## Dry-run Summary
+## Dry-Run
 
 Before creating or modifying any file, output a dry-run and wait for explicit confirmation.
 
@@ -84,31 +89,23 @@ Do not proceed until the user confirms. For integration scaffold files, require 
 
 ## Scaffolding Rules
 
-### New files: fully scaffold
+### New Files
 
-Create with:
+Create with required imports inferred from the plan and local patterns, declarations, all planned signatures, docstrings or intent comments, 2-5 short pseudocode comments, and placeholders such as `pass`, `...`, `throw new NotImplementedException()`, or language equivalent.
 
-- Required imports inferred from plan and local patterns.
-- Class/module declaration.
-- All method/function signatures from the plan step.
-- Docstrings or intent comments on every signature.
-- Short pseudocode comments inside the body, normally 2-5 lines.
-- Placeholders: `pass`, `...`, `throw new NotImplementedException()`, or language equivalent.
-- No real business logic.
-- No concrete database, API, filesystem, auth, or integration code.
-- No finished error-handling branches with real behavior.
+Do not include real business logic, concrete database/API/filesystem/auth/integration code, or finished error-handling behavior.
 
-### Existing files: append only
+### Existing Files
 
-If a new method/function can be cleanly appended at the end of a class or file:
+Append only when a new method/function can be cleanly added at the end of a class or file.
 
 - Append signature, docstring, pseudocode comments, and placeholder.
 - Do not touch existing lines.
 - Wrap with `SCAFFOLD BEGIN` / `SCAFFOLD END` comments using the language's comment syntax.
 
-If appending would break file structure, output inline manual instructions instead.
+If appending would break file structure, output manual instructions instead.
 
-### Existing files: mid-file injection means instructions only
+### Mid-File Injection
 
 Do not modify. Output:
 
@@ -120,20 +117,9 @@ Add:
 Why manual: mid-file injection risks corrupting existing code
 ```
 
-### Interfaces and contracts: instructions by default
+### Interfaces, Contracts, Routing, And Wiring
 
-Do not modify unless the integration scaffold exception applies. Output:
-
-```text
-### Manual edit required: `path/to/IOrderService.cs` (interface)
-Add method signature:
-  <signature>
-Why manual: modifying an interface breaks all implementations; review dependents first
-```
-
-### Wiring and registration: instructions by default
-
-Do not modify `Program.cs`, `Startup.cs`, router files, DI registration files, or equivalent unless the integration scaffold exception applies. Output:
+Instruction-only by default. Do not modify interfaces, DTO contracts, `Program.cs`, `Startup.cs`, router files, DI registration files, or equivalents unless the integration scaffold exception applies.
 
 ```text
 ### Manual edit required: `path/to/Program.cs` (wiring)
@@ -143,28 +129,18 @@ Location: after existing <ServiceName> registration (approx. line N)
 Why manual: registration files are high-risk for silent breakage
 ```
 
-### Integration scaffold exception
+### Integration Scaffold Exception
 
-Interfaces, contracts, routing, and wiring files are instruction-only by default. They may be patched only when all of the following are true:
+Interfaces, contracts, routing, and wiring files may be patched only when all are true:
 
 - The approved plan explicitly lists the exact contract or wiring change.
 - The dry-run labels the file as an integration scaffold change.
 - The dry-run lists likely dependent files and compile/test impact.
 - The user explicitly confirms with wording such as "confirm integration scaffold".
 
-Even then, patch only the planned signature/registration line and never infer extra integrations.
+Even then, patch only the planned signature or registration line and never infer extra integrations.
 
-## Starter Code Quality Rules
-
-Every signature produced must follow these rules regardless of language:
-
-- Signature matches the plan exactly: name, parameters, return type.
-- Docstring or comment describes purpose and key parameters.
-- Pseudocode comments inside the body describe intended flow in 2-5 short lines.
-- Placeholder at the end: `pass`, `...`, `throw new NotImplementedException()`, `return null`, etc.
-- No real logic.
-
-## Scaffold Output Manifest
+## Output Manifest
 
 After scaffolding, always output a manifest.
 
@@ -185,7 +161,6 @@ After scaffolding, always output a manifest.
 
 ### Remaining milestones
 - Milestone 2: <name> - not yet scaffolded
-- Milestone 3: <name> - not yet scaffolded
 
 ### Next step
 Open each created/patched file, place cursor after a signature,
@@ -209,13 +184,14 @@ For newly created files, delete only files listed under `Files created` in the s
 
 For integration scaffold changes, revert only the exact planned signature or registration line shown in the manifest. If the file now has user implementation edits, stop and ask before changing it.
 
-## What This Mode Never Does
+## Never
 
 - Does not write business logic.
 - Does not implement error handling beyond placeholders.
-- Does not modify interfaces, contracts, or wiring files without the explicit integration scaffold exception.
+- Does not modify interfaces, contracts, routing, or wiring files without the explicit integration scaffold exception.
 - Does not scaffold on main/master/trunk/develop.
 - Does not scaffold without an approved plan file.
+- Does not use single-file planning notes as scaffold input.
 - Does not scaffold multiple milestones at once.
-- Does not skip the dry-run confirmation step.
-- Does not produce full function bodies even if asked; redirect to controlled implementation.
+- Does not skip dry-run confirmation.
+- Does not produce full function bodies even if asked; redirect to `controlled-coding`.
