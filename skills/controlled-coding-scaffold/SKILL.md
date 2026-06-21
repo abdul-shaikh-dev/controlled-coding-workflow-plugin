@@ -74,24 +74,35 @@ Confirm scaffold? yes / no / adjust
 
 For interfaces, contracts, routing, DI, or wiring files, require explicit wording such as "confirm integration scaffold".
 
-## Marker Protocol
+## Ghost Prompt Protocol
 
-Use the repo's accepted temporary marker if visible in nearby code or config. Do not broaden exploration only to detect marker policy.
+Use a searchable scaffold anchor plus a natural cursor prompt. Keep the anchor out of the exact comment where the developer expects Copilot ghost text to continue.
 
-Default marker:
-
-```text
-TODO(copilot-ghost): <specific local instruction>
-```
-
-For multi-step work:
+Default anchor:
 
 ```text
-TODO(copilot-ghost 1/N): <first local instruction>
-TODO(copilot-ghost 2/N): <second local instruction>
+copilot-ghost: <short local anchor>
 ```
 
-Keep markers local, specific, searchable, and removable. Tell the developer to delete scaffold-only markers after implementation.
+Default cursor prompt:
+
+```text
+<natural instruction in the repo's normal comment style, without TODO(copilot-ghost)>
+```
+
+For multi-step work, number the anchor but keep the cursor prompt natural:
+
+```text
+copilot-ghost 1/N: <short anchor>
+<natural prompt for the first local completion>
+
+copilot-ghost 2/N: <short anchor>
+<natural prompt for the second local completion>
+```
+
+Keep anchors local, specific, searchable, and removable. Tell the developer to delete scaffold-only anchors after implementation.
+
+Do not put `TODO(copilot-ghost)` inside the comment where ghost text should trigger. If completion stalls, the handoff should tell the developer to remove the anchor line and leave only the natural prompt before retrying.
 
 If the repo blocks `TODO` comments, do not blindly switch to another likely-blocked marker such as `FIXME`. Use an accepted searchable style such as `NOTE(copilot-ghost)`, `copilot-ghost`, or a tracked issue reference, and mention the chosen marker in the handoff.
 
@@ -99,9 +110,9 @@ If the repo blocks `TODO` comments, do not blindly switch to another likely-bloc
 
 Prefer additive patches. Do not delete or rewrite existing behavior for scaffold insertion.
 
-Before adding a method, route, mapper, validator, DTO, public API, or test, check whether an equivalent target already exists. If it exists, add the marker inside or directly above that target instead of creating a duplicate.
+Before adding a method, route, mapper, validator, DTO, public API, or test, check whether an equivalent target already exists. If it exists, add the anchor and prompt inside or directly above that target instead of creating a duplicate.
 
-New files may include imports inferred from the plan/local patterns, declarations, planned signatures, intent comments, short pseudocode, markers, and valid placeholders.
+New files may include imports inferred from the plan/local patterns, declarations, planned signatures, intent comments, short pseudocode, scaffold anchors, natural cursor prompts, and valid placeholders.
 
 Existing files may be appended only when structurally safe. If mid-file insertion is risky, output manual cursor instructions instead.
 
@@ -111,14 +122,16 @@ Do not touch generated, vendored, lock, minified, snapshot, migration, or unrela
 
 Use syntactically valid placeholders:
 
-- C#: `throw new System.NotImplementedException("TODO(copilot-ghost)");`
-- Python: `raise NotImplementedError("TODO(copilot-ghost)")`
-- TypeScript/JavaScript utility code: `throw new Error("TODO(copilot-ghost)");`
+- C#: `throw new System.NotImplementedException("scaffold placeholder");`
+- Python: `raise NotImplementedError("scaffold placeholder")`
+- TypeScript/JavaScript utility code: `throw new Error("scaffold placeholder");`
 - React/renderable components: `return null;` or a tiny inert placeholder element.
-- Java: `throw new UnsupportedOperationException("TODO(copilot-ghost)");`
-- Go: `panic("TODO(copilot-ghost)")`
+- Java: `throw new UnsupportedOperationException("scaffold placeholder");`
+- Go: `panic("scaffold placeholder")`
 
-For tests, default to names, TODO comments, or skipped/pending skeletons so scaffold insertion does not unexpectedly break the suite. If a skipped/pending test is completed later, require removing the skip/pending marker.
+For tests, default to autocomplete-friendly red test skeletons when the user is intentionally using ghost-text completion. Include imports, the test name, representative arrange/act/assert comments, and a final failing placeholder such as `assert.fail("scaffold placeholder")`. State in the dry-run that validation is expected to fail until the test body is completed.
+
+Use skipped or pending tests only when the user asks to keep the suite green during scaffold. If a skipped/pending test is completed later, require removing the skip/pending marker.
 
 For existing bug fixes, add a local marker near suspicious code or a pending test. Do not insert runtime-throw placeholders into existing execution paths.
 
@@ -144,19 +157,20 @@ Changed:
 - <file>: <what was scaffolded>
 
 Start at:
-- Search for TODO(copilot-ghost)
+- Search for copilot-ghost
 
 Cursor handoff:
 1. Open <file>.
-2. Complete <marker 1/N> first.
-3. Put the cursor inside/under the marker.
+2. Complete <anchor 1/N> first.
+3. Put the cursor inside or directly below the natural prompt, not on the anchor line.
 4. Accept only the next coherent Copilot ghost-text block.
 5. Use partial acceptance when the suggestion is directionally right but too large.
 6. Press Escape when Copilot invents unrelated APIs, abstractions, dependencies, or behavior.
-7. Delete the scaffold marker only after that block is implemented.
-8. If this is a skipped/pending test, remove the skip/pending marker after completing the body.
-9. Run <smallest validation command>.
-10. Move to the next marker only after the check passes.
+7. If completion does not trigger, delete the anchor line and leave the natural prompt, then retry.
+8. Delete the scaffold anchor only after that block is implemented.
+9. If this is a skipped/pending test, remove the skip/pending marker after completing the body.
+10. Run <smallest validation command>.
+11. Move to the next anchor only after the check passes, or after the expected red test fails only at the scaffold placeholder.
 
 Stop condition:
 - Stop after <specific slice> passes.
@@ -182,7 +196,7 @@ git status --short
 git diff -- path/to/scaffolded-or-patched-file
 ```
 
-Remove only inserted markers, placeholders, scaffold blocks, or newly created files listed in the manifest. If the file now has user implementation edits, stop and ask before changing it.
+Remove only inserted anchors, prompts, placeholders, scaffold blocks, or newly created files listed in the manifest. If the file now has user implementation edits, stop and ask before changing it.
 
 ## Never
 
