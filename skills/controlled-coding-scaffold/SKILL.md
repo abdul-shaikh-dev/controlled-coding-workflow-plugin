@@ -1,67 +1,58 @@
 ---
 name: controlled-coding-scaffold
-description: Use when the user explicitly asks to scaffold starter files, create skeleton files, or set up placeholder code from an approved controlled-coding-plan implementation plan without writing business logic.
+description: Use when the user explicitly asks to scaffold starter files, create skeletons, insert autocomplete markers, or prepare real files for Copilot ghost-text completion from an approved controlled-coding-plan implementation plan.
 ---
 
 # Controlled Coding Scaffold
 
-Create starter files from an approved `controlled-coding-plan` implementation plan. Never plan here. Never implement business logic.
+Prepare real files for autocomplete-first implementation from an approved `controlled-coding-plan`. Never plan here. Never write business logic.
 
-The approved plan must exist at `docs/controlled-coding/{feature-name}/implementation-plan.md` before scaffolding begins. Single-file planning notes and chat-only plans are not scaffold inputs.
+The approved plan must exist at `docs/controlled-coding/{feature-name}/implementation-plan.md`. Chat-only plans and single-file notes are not scaffold inputs.
 
-Use the same capable model that produced the plan unless there is a clear reason to switch.
+## Pre-Flight
 
-## Pre-Flight Checks
+Run all checks before touching files.
 
-Run all checks before touching files. If any fail, stop and report.
-
-### 1. Branch Check
+1. Check branch:
 
 ```bash
 git branch --show-current
 ```
 
-If the current branch is `main`, `master`, `trunk`, or `develop`, refuse:
+If the branch is `main`, `master`, `trunk`, or `develop`, refuse and ask for a feature branch.
 
-```text
-Scaffold aborted: you are on branch '<branch>'.
-Switch to a feature branch before scaffolding.
+2. Check dirty state:
+
+```bash
+git status --short
 ```
 
-### 2. Plan File Check
+Avoid files with unrelated active edits when possible. If the intended target is heavily modified, switch to dry-run/manual instructions.
 
-Expected path:
+3. Check plan file:
 
 ```text
 docs/controlled-coding/{feature-name}/implementation-plan.md
 ```
 
-If not found:
+If missing, stop and ask the user to run `controlled-coding-plan` and save the approved plan to the canonical path.
 
-```text
-Scaffold aborted: no implementation plan found.
-Expected: docs/controlled-coding/{feature-name}/implementation-plan.md
-Run `controlled-coding-plan` first and save the approved plan to the canonical path.
-```
+4. Identify the milestone and smallest scaffold slice. Scaffold one milestone or slice at a time.
 
-If the user has a plan only in chat or in `docs/controlled-coding/{feature-name}.md`, stop and ask to save or migrate it to the canonical path before scaffolding.
+## Budget
 
-### 3. Milestone Check
+Default pass:
 
-If the plan has multiple milestones, confirm which to scaffold:
+- inspect at most 5 relevant files,
+- edit at most 3 files,
+- add at most about 40 scaffold lines per file,
+- avoid broad scans, broad formatters, and speculative new modules.
 
-```text
-This plan has N milestones:
-- Milestone 1: <name>
-- Milestone 2: <name>
-Which milestone should I scaffold? Default: Milestone 1.
-```
-
-Scaffold one milestone at a time. Never scaffold ahead.
+If safe targets cannot be found inside this budget, output a dry-run/manual plan instead of broadening scope.
 
 ## Dry-Run
 
-Before creating or modifying any file, output a dry-run and wait for explicit confirmation.
+Before editing, output a dry-run and wait for explicit confirmation.
 
 ```text
 ## Scaffold Dry-run: {feature-name} / Milestone <N>
@@ -69,129 +60,138 @@ Before creating or modifying any file, output a dry-run and wait for explicit co
 ### Files to create
 - `path/to/new_file` - <what it contains>
 
-### Files to patch, append only
-- `path/to/existing_file` - <what will be appended>
+### Files to patch
+- `path/to/existing_file` - <marker/signature to append or insert>
 
-### Integration scaffold files
-- `path/to/wiring_file` - <exact planned line/signature>, requires explicit integration scaffold confirmation
+### Manual edits only
+- `path/to/file` - <why direct patch is risky>
 
-### Files requiring manual edit
-- `path/to/existing_file` - <why manual edit is needed>
-
-### Files that will not be touched
-- `path/to/interface_file` - interface/contract, manual only unless integration scaffold is confirmed
-- `path/to/wiring_file` - registration/wiring, manual only unless integration scaffold is confirmed
+### Validation
+- <smallest likely command>
 
 Confirm scaffold? yes / no / adjust
 ```
 
-Do not proceed until the user confirms. For integration scaffold files, require explicit wording such as "confirm integration scaffold".
+For interfaces, contracts, routing, DI, or wiring files, require explicit wording such as "confirm integration scaffold".
 
-## Scaffolding Rules
+## Marker Protocol
 
-### New Files
+Use the repo's accepted temporary marker if visible in nearby code or config. Do not broaden exploration only to detect marker policy.
 
-Create with required imports inferred from the plan and local patterns, declarations, all planned signatures, docstrings or intent comments, 2-5 short pseudocode comments, and placeholders such as `pass`, `...`, `throw new NotImplementedException()`, or language equivalent.
-
-Do not include real business logic, concrete database/API/filesystem/auth/integration code, or finished error-handling behavior.
-
-### Existing Files
-
-Append only when a new method/function can be cleanly added at the end of a class or file.
-
-- Append signature, docstring, pseudocode comments, and placeholder.
-- Do not touch existing lines.
-- Wrap with `SCAFFOLD BEGIN` / `SCAFFOLD END` comments using the language's comment syntax.
-
-If appending would break file structure, output manual instructions instead.
-
-### Mid-File Injection
-
-Do not modify. Output:
+Default marker:
 
 ```text
-### Manual edit required: `path/to/file`
-Location: after method `ExistingMethod` (approx. line N)
-Add:
-  <signature + docstring + pseudocode comments + placeholder>
-Why manual: mid-file injection risks corrupting existing code
+TODO(copilot-ghost): <specific local instruction>
 ```
 
-### Interfaces, Contracts, Routing, And Wiring
-
-Instruction-only by default. Do not modify interfaces, DTO contracts, `Program.cs`, `Startup.cs`, router files, DI registration files, or equivalents unless the integration scaffold exception applies.
+For multi-step work:
 
 ```text
-### Manual edit required: `path/to/Program.cs` (wiring)
-Add registration:
-  <line to add>
-Location: after existing <ServiceName> registration (approx. line N)
-Why manual: registration files are high-risk for silent breakage
+TODO(copilot-ghost 1/N): <first local instruction>
+TODO(copilot-ghost 2/N): <second local instruction>
 ```
 
-### Integration Scaffold Exception
+Keep markers local, specific, searchable, and removable. Tell the developer to delete scaffold-only markers after implementation.
 
-Interfaces, contracts, routing, and wiring files may be patched only when all are true:
+If the repo blocks `TODO` comments, do not blindly switch to another likely-blocked marker such as `FIXME`. Use an accepted searchable style such as `NOTE(copilot-ghost)`, `copilot-ghost`, or a tracked issue reference, and mention the chosen marker in the handoff.
 
-- The approved plan explicitly lists the exact contract or wiring change.
-- The dry-run labels the file as an integration scaffold change.
-- The dry-run lists likely dependent files and compile/test impact.
-- The user explicitly confirms with wording such as "confirm integration scaffold".
+## Scaffold Rules
 
-Even then, patch only the planned signature or registration line and never infer extra integrations.
+Prefer additive patches. Do not delete or rewrite existing behavior for scaffold insertion.
 
-## Output Manifest
+Before adding a method, route, mapper, validator, DTO, public API, or test, check whether an equivalent target already exists. If it exists, add the marker inside or directly above that target instead of creating a duplicate.
 
-After scaffolding, always output a manifest.
+New files may include imports inferred from the plan/local patterns, declarations, planned signatures, intent comments, short pseudocode, markers, and valid placeholders.
+
+Existing files may be appended only when structurally safe. If mid-file insertion is risky, output manual cursor instructions instead.
+
+Do not touch generated, vendored, lock, minified, snapshot, migration, or unrelated files unless explicitly requested.
+
+## Placeholder Rules
+
+Use syntactically valid placeholders:
+
+- C#: `throw new System.NotImplementedException("TODO(copilot-ghost)");`
+- Python: `raise NotImplementedError("TODO(copilot-ghost)")`
+- TypeScript/JavaScript utility code: `throw new Error("TODO(copilot-ghost)");`
+- React/renderable components: `return null;` or a tiny inert placeholder element.
+- Java: `throw new UnsupportedOperationException("TODO(copilot-ghost)");`
+- Go: `panic("TODO(copilot-ghost)")`
+
+For tests, default to names, TODO comments, or skipped/pending skeletons so scaffold insertion does not unexpectedly break the suite. If a skipped/pending test is completed later, require removing the skip/pending marker.
+
+For existing bug fixes, add a local marker near suspicious code or a pending test. Do not insert runtime-throw placeholders into existing execution paths.
+
+## Integration Files
+
+Interfaces, contracts, routing, and wiring files are instruction-only by default. Patch them only when all are true:
+
+- the approved plan lists the exact change,
+- the dry-run labels it as integration scaffold,
+- likely dependent files and compile/test impact are listed,
+- the user explicitly confirms integration scaffold.
+
+Patch only the planned signature or registration line.
+
+## Handoff
+
+After editing, respond with the scaffold manifest and cursor handoff:
 
 ```text
-## Scaffold Complete: {feature-name} / Milestone <N>
+Scaffold inserted.
 
-### Files created
-- `path/to/new_file`
+Changed:
+- <file>: <what was scaffolded>
 
-### Files patched, appended
-- `path/to/existing_file` - appended N signature(s)
+Start at:
+- Search for TODO(copilot-ghost)
 
-### Integration scaffold files patched
-- `path/to/wiring_file` - exact planned line only
+Cursor handoff:
+1. Open <file>.
+2. Complete <marker 1/N> first.
+3. Put the cursor inside/under the marker.
+4. Accept only the next coherent Copilot ghost-text block.
+5. Use partial acceptance when the suggestion is directionally right but too large.
+6. Press Escape when Copilot invents unrelated APIs, abstractions, dependencies, or behavior.
+7. Delete the scaffold marker only after that block is implemented.
+8. If this is a skipped/pending test, remove the skip/pending marker after completing the body.
+9. Run <smallest validation command>.
+10. Move to the next marker only after the check passes.
 
-### Manual edits required
-1. `path/to/file` - <what to add and where>
+Stop condition:
+- Stop after <specific slice> passes.
 
-### Remaining milestones
-- Milestone 2: <name> - not yet scaffolded
+Escalate only if:
+- <condition>
 
-### Next step
-Open each created/patched file, place cursor after a signature,
-and let IDE autocomplete complete the body.
-When all manual edits are done and bodies are implemented,
-run: [test command from plan]
+After all markers are complete:
+- Run targeted validation, then normal repo validation if practical.
+- Use `controlled-coding-review` to check for generated artifacts, unused helpers, invented APIs, duplicate code, and over-broad changes.
 ```
+
+Infer the smallest useful validation command from repo files: package-manager lockfile and scripts for JS/TS, targeted `pytest`, targeted `dotnet test`, `go test`, `cargo test`, or a relevant `make` target.
+
+If file editing is unavailable or a safe edit target cannot be found, clearly label the response as fallback/manual mode. Provide the smallest pasteable scaffold or cursor instructions, and do not say files were changed.
 
 ## Rollback
 
-Rollback must be based on the scaffold manifest. Do not suggest broad reset commands as the default.
+Rollback only from the scaffold manifest/handoff:
 
 ```bash
 git status --short
 git diff -- path/to/scaffolded-or-patched-file
 ```
 
-For appended scaffold blocks, remove only the `SCAFFOLD BEGIN` / `SCAFFOLD END` block with a minimal patch.
-
-For newly created files, delete only files listed under `Files created` in the scaffold manifest, and only after confirming the developer has not filled in implementation bodies.
-
-For integration scaffold changes, revert only the exact planned signature or registration line shown in the manifest. If the file now has user implementation edits, stop and ask before changing it.
+Remove only inserted markers, placeholders, scaffold blocks, or newly created files listed in the manifest. If the file now has user implementation edits, stop and ask before changing it.
 
 ## Never
 
 - Does not write business logic.
-- Does not implement error handling beyond placeholders.
-- Does not modify interfaces, contracts, routing, or wiring files without the explicit integration scaffold exception.
-- Does not scaffold on main/master/trunk/develop.
 - Does not scaffold without an approved plan file.
-- Does not use single-file planning notes as scaffold input.
+- Does not scaffold on main/master/trunk/develop.
+- Does not use chat-only or single-file notes as scaffold input.
 - Does not scaffold multiple milestones at once.
 - Does not skip dry-run confirmation.
+- Does not create duplicate public APIs, routes, mappers, validators, DTOs, or tests.
+- Does not run broad formatters.
 - Does not produce full function bodies even if asked; redirect to `controlled-coding`.

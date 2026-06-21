@@ -10,7 +10,7 @@ Do not use it for one-line fixes, simple renames, formatting-only edits, typo fi
 
 1. Discover the relevant codebase context.
 2. Create an implementation plan before writing code, even when the user asks to implement immediately.
-3. Implement one approved step, or scaffold starter files only when explicitly requested.
+3. Implement one approved step, or scaffold autocomplete-ready starter files only when explicitly requested.
 4. Review the diff against the original plan.
 5. Apply targeted fixes only.
 
@@ -20,7 +20,7 @@ Use `controlled-coding` for the simple umbrella workflow.
 
 Use `controlled-coding-plan` for discovery and implementation planning.
 
-Use `controlled-coding-scaffold` for starter files, skeletons, and placeholders from an approved plan.
+Use `controlled-coding-scaffold` for starter files, skeletons, searchable autocomplete markers, and cursor handoff from an approved plan.
 
 Use `controlled-coding-review` for plan-based review and targeted fix planning.
 

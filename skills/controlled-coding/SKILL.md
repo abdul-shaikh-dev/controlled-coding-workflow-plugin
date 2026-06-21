@@ -21,7 +21,7 @@ Do not create or modify repository files unless implementation, scaffold, or doc
 |---|---|
 | Plan, design, feasibility, "how should we do this?" | `controlled-coding-plan` |
 | Implement, make changes, apply patch | `controlled-coding-plan` first, then implement only the approved step |
-| Scaffold starter files, skeletons, placeholders | `controlled-coding-scaffold` |
+| Scaffold starter files, skeletons, autocomplete markers | `controlled-coding-scaffold` |
 | Review diff, check plan adherence, targeted fixes | `controlled-coding-review` |
 | Debug a non-trivial failure | Use this skill's debugging rules |
 | Ambiguous coding request | `controlled-coding-plan` |
@@ -37,7 +37,7 @@ Use a capable model. Avoid economy or mini models for architecture-sensitive wor
 ```text
 1. Use controlled-coding-plan for discovery and implementation plan.
 2. Wait for user approval.
-3. Implement one approved step, or use controlled-coding-scaffold for starter files.
+3. Implement one approved step, or use controlled-coding-scaffold for autocomplete-ready starter files.
 4. Use controlled-coding-review to compare the diff against the plan.
 5. Apply only targeted fixes from review.
 ```
