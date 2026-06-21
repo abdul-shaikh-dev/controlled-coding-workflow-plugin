@@ -93,6 +93,8 @@ TODO(copilot-ghost 2/N): <second local instruction>
 
 Keep markers local, specific, searchable, and removable. Tell the developer to delete scaffold-only markers after implementation.
 
+If the repo blocks `TODO` comments, do not blindly switch to another likely-blocked marker such as `FIXME`. Use an accepted searchable style such as `NOTE(copilot-ghost)`, `copilot-ghost`, or a tracked issue reference, and mention the chosen marker in the handoff.
+
 ## Scaffold Rules
 
 Prefer additive patches. Do not delete or rewrite existing behavior for scaffold insertion.
@@ -149,19 +151,27 @@ Cursor handoff:
 2. Complete <marker 1/N> first.
 3. Put the cursor inside/under the marker.
 4. Accept only the next coherent Copilot ghost-text block.
-5. Delete the scaffold marker only after that block is implemented.
-6. If this is a skipped/pending test, remove the skip/pending marker after completing the body.
-7. Run <smallest validation command>.
-8. Move to the next marker only after the check passes.
+5. Use partial acceptance when the suggestion is directionally right but too large.
+6. Press Escape when Copilot invents unrelated APIs, abstractions, dependencies, or behavior.
+7. Delete the scaffold marker only after that block is implemented.
+8. If this is a skipped/pending test, remove the skip/pending marker after completing the body.
+9. Run <smallest validation command>.
+10. Move to the next marker only after the check passes.
 
 Stop condition:
 - Stop after <specific slice> passes.
 
 Escalate only if:
 - <condition>
+
+After all markers are complete:
+- Run targeted validation, then normal repo validation if practical.
+- Use `controlled-coding-review` to check for generated artifacts, unused helpers, invented APIs, duplicate code, and over-broad changes.
 ```
 
 Infer the smallest useful validation command from repo files: package-manager lockfile and scripts for JS/TS, targeted `pytest`, targeted `dotnet test`, `go test`, `cargo test`, or a relevant `make` target.
+
+If file editing is unavailable or a safe edit target cannot be found, clearly label the response as fallback/manual mode. Provide the smallest pasteable scaffold or cursor instructions, and do not say files were changed.
 
 ## Rollback
 
