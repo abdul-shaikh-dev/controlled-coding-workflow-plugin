@@ -87,7 +87,7 @@ copilot-ghost: <short local anchor>
 Default cursor prompt:
 
 ```text
-<natural instruction in the repo's normal comment style, without TODO(copilot-ghost)>
+<natural instruction in the repo's normal comment style>
 ```
 
 For multi-step work, number the anchor but keep the cursor prompt natural:
@@ -100,9 +100,7 @@ copilot-ghost 2/N: <short anchor>
 <natural prompt for the second local completion>
 ```
 
-Keep anchors local, specific, searchable, and removable. Tell the developer to delete scaffold-only anchors after implementation.
-
-Do not put `TODO(copilot-ghost)` inside the comment where ghost text should trigger. If completion stalls, the handoff should tell the developer to remove the anchor line and leave only the natural prompt before retrying.
+Keep anchors local, specific, searchable, and removable. Use `copilot-ghost` only as the searchable anchor line, then put the cursor on the natural prompt line below it. Tell the developer to delete scaffold-only anchors after implementation.
 
 If the repo blocks `TODO` comments, do not blindly switch to another likely-blocked marker such as `FIXME`. Use an accepted searchable style such as `NOTE(copilot-ghost)`, `copilot-ghost`, or a tracked issue reference, and mention the chosen marker in the handoff.
 
