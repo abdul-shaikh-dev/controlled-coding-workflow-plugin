@@ -30,6 +30,7 @@ The implementation plan is mandatory before source edits for any coding task tha
 
 ```text
 plugin.json
+docs/evaluation/
 skills/
   controlled-coding/
     SKILL.md
@@ -40,3 +41,7 @@ skills/
   controlled-coding-review/
     SKILL.md
 ```
+
+## Evaluation
+
+Use `docs/evaluation/` to run baseline-vs-treatment checks against real tasks and score whether the skills actually change agent behavior.
